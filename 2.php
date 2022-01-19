@@ -101,22 +101,25 @@ $xml = simplexml_load_file("products.xml");
 foreach ($xml as $product_key => $product) {
     echo $product->attributes()["Код"] . " "; // код продукта
     echo $product->attributes()["Название"] . " "; // название продукта
+    // foreach ($product->attributes() as $product_attr) {
+    //     echo $product_attr . " "; // код и название продукта, по очереди
+    // };
     foreach ($product->Цена as $price_key => $price) {
         foreach ($price->attributes() as $price_type) {
-            echo $price_type . " "; // тип цены
+            echo $price_type->__toString() . " "; // тип цены
         }
-        echo $price . " "; // цена
+        echo (float) $price->__toString() . " "; // цена
     }
     foreach ($product->Свойства->children() as $property) {
         echo $property->getName() . " "; // название свойства
-        if (count($property->attributes()) > 0) {
+        if ($property->attributes()->count() > 0) {
             echo $property->attributes()->getName() . " "; // название атрибута
-            echo $property->attributes() . " "; // значение атрибута
+            echo $property->attributes()->__toString() . " "; // значение атрибута
         };
         echo $property . " "; // значение свойства
     }
     foreach ($product->Разделы->children() as $category) {
-        echo $category . " "; // категория
+        echo $category->__toString() . " "; // категория
     }
     echo PHP_EOL . PHP_EOL;
 }
