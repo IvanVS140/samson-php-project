@@ -92,11 +92,14 @@ foreach ($test_array as $arr) {
     echo str_repeat(PHP_EOL, 2);
 }
 
-// $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
-// $mysqli->set_charset('utf8');
-// $query = "INSERT INTO a_category VALUES(null, 11,'test')";
-// $mysqli->query($query);
+$mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
+$mysqli->set_charset('utf8');
+$query = "INSERT INTO a_product VALUES(null, 234,'test_name_5')";
+$mysqli->query($query);
 
-// $mysqli->close();
+$mysqli->close();
+
+echo "query done";
+
 // phpcs:ignore PSR2.Files.ClosingTag.NotAllowed
 ?>
