@@ -99,13 +99,21 @@ $xml = simplexml_load_file("products.xml");
 // echo $xml->Товар[0]->attributes()['Код'];
 
 foreach ($xml as $product_key => $product) {
-    echo $product->attributes()["Код"] . " ";
-    echo $product->attributes()["Название"] . PHP_EOL;
-    foreach ($product->Цена as $key => $value) {
-        echo $key . " ";
-        echo $product->$key->attributes()["Тип"] . " ";
-        echo $value . PHP_EOL;
+    echo $product->attributes()["Код"] . " "; // код продукта
+    echo $product->attributes()["Название"] . " "; // название продукта
+    foreach ($product->Цена as $price_key => $price) {
+        foreach ($price->attributes() as $price_type) {
+            echo $price_type . " "; // тип цены
+        }
+        echo $price . " "; // цена
     }
+    foreach ($product->Свойства as $property_key => $property) {
+        foreach ($property as $property_type => $property_value) {
+            echo $property_type . " "; // свойство товара
+            echo $property_value . " "; // значение свойства
+        };
+    };
+    echo PHP_EOL . PHP_EOL;
 }
 
 // $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
