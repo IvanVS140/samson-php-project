@@ -107,12 +107,20 @@ foreach ($xml as $product_key => $product) {
         }
         echo $price . " "; // цена
     }
-    foreach ($product->Свойства as $property_key => $property) {
-        foreach ($property as $property_type => $property_value) {
-            echo $property_type . " "; // свойство товара
-            echo $property_value . " "; // значение свойства
-        };
-    };
+    foreach ($product->Свойства->children() as $qwe) { // считаем
+        echo "-=" . count($qwe->attributes()) . "=-";  // количество
+    };                                                 // атрибутов в свойстве
+    foreach ($product->Свойства->children() as $property) {
+        if (count($property->attributes()) == 0) {
+            
+        }
+    }
+    // foreach ($product->Свойства as $property_key => $property) {
+    //     foreach ($property as $property_type => $property_value) {
+    //         echo $property_type . " "; // свойство товара
+    //         echo $property_value . " "; // значение свойства
+    //     };
+    // };
     echo PHP_EOL . PHP_EOL;
 }
 
