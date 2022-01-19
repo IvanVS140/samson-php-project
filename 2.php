@@ -96,15 +96,26 @@ foreach ($test_array as $arr) {
 echo PHP_EOL;
 
 $xml = simplexml_load_file("products.xml");
-// echo $xml->Товар[0]->attributes()['Код'];
+
+$mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
+$mysqli->set_charset('utf8');
 
 foreach ($xml as $product_key => $product) {
-    echo $product->attributes()["Код"] . " "; // код продукта
-    echo $product->attributes()["Название"] . " "; // название продукта
-    // foreach ($product->attributes() as $product_attr) {
-    //     echo $product_attr . " "; // код и название продукта, по очереди
-    // };
-    foreach ($product->Цена as $price_key => $price) {
+     // код продукта
+    echo $product_code = $product->attributes()["Код"] . " ";
+
+     // название продукта
+    echo $product_name = $product->attributes()["Название"] . " ";
+
+    $product_query = "INSERT INTO a_product VALUES(
+        null,
+        '$product_code',
+        '$product_name')";
+
+    $mysqli->query($product_query);
+
+    // ищем цену
+    foreach ($product->Цена as $price) {
         foreach ($price->attributes() as $price_type) {
             echo $price_type->__toString() . " "; // тип цены
         }
@@ -129,9 +140,9 @@ foreach ($xml as $product_key => $product) {
 // $query = "INSERT INTO a_product VALUES(null, 234,'test_name_5')";
 // $mysqli->query($query);
 
-// $mysqli->close();
+$mysqli->close();
 
-// echo "query done";
+echo "query done";
 
 // phpcs:ignore PSR2.Files.ClosingTag.NotAllowed
 ?>
