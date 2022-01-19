@@ -92,14 +92,30 @@ foreach ($test_array as $arr) {
     echo str_repeat(PHP_EOL, 2);
 }
 
-$mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
-$mysqli->set_charset('utf8');
-$query = "INSERT INTO a_product VALUES(null, 234,'test_name_5')";
-$mysqli->query($query);
+// MySQL
+echo PHP_EOL;
 
-$mysqli->close();
+$xml = simplexml_load_file("products.xml");
+// echo $xml->Товар[0]->attributes()['Код'];
 
-echo "query done";
+foreach ($xml as $product_key => $product) {
+    echo $product->attributes()["Код"] . " ";
+    echo $product->attributes()["Название"] . PHP_EOL;
+    foreach ($product->Цена as $key => $value) {
+        echo $key . " ";
+        echo $product->$key->attributes()["Тип"] . " ";
+        echo $value . PHP_EOL;
+    }
+}
+
+// $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
+// $mysqli->set_charset('utf8');
+// $query = "INSERT INTO a_product VALUES(null, 234,'test_name_5')";
+// $mysqli->query($query);
+
+// $mysqli->close();
+
+// echo "query done";
 
 // phpcs:ignore PSR2.Files.ClosingTag.NotAllowed
 ?>
