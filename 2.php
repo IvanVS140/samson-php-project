@@ -113,41 +113,45 @@ $mysqli->set_charset('utf8');
 // $mysqli->query($property_query);
 
 foreach ($xml as $product_key => $product) {
-     // код продукта
+     // Код продукта
     echo $product_code = $product->attributes()["Код"] . " ";
-     // название продукта
+     // Название продукта
     echo $product_name = $product->attributes()["Название"] . " ";
     $product_query = "INSERT INTO a_product VALUES(
         null,
         '$product_code',
         '$product_name')";
-        $mysqli->query($product_query);
-    // текущий id продукта
+        // $mysqli->query($product_query);
+    // id продукта
     $recent_row = $mysqli->query(
         "SELECT product_id FROM a_product ORDER BY product_id DESC LIMIT 1"
     );
     foreach ($recent_row as $row) {
         echo $current_product_id = $row['product_id'];
     }
-
-    // ищем цену
+    // Цена продукта
     foreach ($product->Цена as $price) {
         foreach ($price->attributes() as $price_type) {
-            echo $price_type->__toString() . " "; // тип цены
+            echo $price_type->__toString() . " "; // Тип цены
         }
-        echo (float) $price->__toString() . " "; // цена
+        echo (float) $price->__toString() . " "; // Значение цены
     }
+    // Свойства продукта
     foreach ($product->Свойства->children() as $property) {
-        $property_name = $property->getName(); // название свойства
-        $attr_mame = null;
-        $attr_value = null;
-        $product_property  = null;
+        $property_name = $property->getName(); // Название свойства
+        $attr_mame = null; // Атрибут свойства
+        $attr_value = null; // Значение атрибута свойства
+        $product_property  = null; // Значение свойства целиком
         if ($property->attributes()->count() > 0) {
-            $attr_mame = $property->attributes()->getName(); // название атрибута
-            $attr_value = $property->attributes(); // значение атрибута
-            echo $product_property = $property_name . "(" . $attr_mame . " " . $attr_value . "):" . $property;
+            $attr_mame = $property->attributes()->getName();
+            $attr_value = $property->attributes();
+            echo $product_property
+                = $property_name .
+                "(" . $attr_mame .
+                " " . $attr_value .
+                "):" . $property;
         } else {
-            echo $product_property = $property_name . ":" . $property . ";"; // значение свойства
+            echo $product_property = $property_name . ":" . $property . ";";
         };
 
         // $property_query = "INSERT INTO a_property VALUES(
