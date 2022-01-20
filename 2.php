@@ -100,18 +100,7 @@ $xml = simplexml_load_file("products.xml");
 $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
 $mysqli->set_charset('utf8');
 
-// $recent_row = $mysqli->query(
-//     "SELECT product_id FROM a_product ORDER BY product_id DESC LIMIT 1"
-// );
-
-// foreach ($recent_row as $row) {
-//     $ex_product_id = $row['product_id'];
-// }
-// echo $current_product_id = $ex_product_id + 1 . PHP_EOL;
-
-// $property_query = "INSERT INTO a_property VALUES(6, 'wewewewe')";
-// $mysqli->query($property_query);
-
+$switch = 1;
 foreach ($xml as $product_key => $product) {
      // Код продукта
     echo $product_code = $product->attributes()["Код"] . " ";
@@ -123,11 +112,14 @@ foreach ($xml as $product_key => $product) {
         '$product_name')";
         $mysqli->query($product_query);
     // id продукта
-    $recent_row = $mysqli->query(
-        "SELECT product_id FROM a_product ORDER BY product_id DESC LIMIT 1"
-    );
-    foreach ($recent_row as $row) {
-        echo $current_product_id = $row['product_id'];
+    if ($switch == 1) {
+        $recent_row = $mysqli->query(
+            "SELECT product_id FROM a_product ORDER BY product_id DESC LIMIT 1"
+        );
+        foreach ($recent_row as $row) {
+            $current_product_id = $row['product_id'];
+        }
+        $switch = 0;
     }
     // Цена продукта
     foreach ($product->Цена as $price) {
@@ -153,22 +145,18 @@ foreach ($xml as $product_key => $product) {
         } else {
             echo $product_property = $property_name . ":" . $property . ";";
         };
-
         $property_query = "INSERT INTO a_property VALUES(
             '$current_product_id',
             '$product_property')";
         $mysqli->query($property_query);
     }
+    $current_product_id++;
+    // Категория продукта
     foreach ($product->Разделы->children() as $category) {
         echo $category->__toString() . " "; // категория
     }
     echo PHP_EOL . PHP_EOL;
 }
-
-// $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
-// $mysqli->set_charset('utf8');
-// $query = "INSERT INTO a_product VALUES(null, 234,'test_name_5')";
-// $mysqli->query($query);
 
 $mysqli->close();
 
