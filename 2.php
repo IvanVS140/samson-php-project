@@ -121,7 +121,7 @@ foreach ($xml as $product_key => $product) {
         null,
         '$product_code',
         '$product_name')";
-        // $mysqli->query($product_query);
+        $mysqli->query($product_query);
     // id продукта
     $recent_row = $mysqli->query(
         "SELECT product_id FROM a_product ORDER BY product_id DESC LIMIT 1"
@@ -154,10 +154,10 @@ foreach ($xml as $product_key => $product) {
             echo $product_property = $property_name . ":" . $property . ";";
         };
 
-        // $property_query = "INSERT INTO a_property VALUES(
-        //     '$current_product_id',
-        //     '$product_property')";
-        // $mysqli->query($property_query);
+        $property_query = "INSERT INTO a_property VALUES(
+            '$current_product_id',
+            '$product_property')";
+        $mysqli->query($property_query);
     }
     foreach ($product->Разделы->children() as $category) {
         echo $category->__toString() . " "; // категория
