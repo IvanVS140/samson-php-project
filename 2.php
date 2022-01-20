@@ -100,19 +100,35 @@ $xml = simplexml_load_file("products.xml");
 $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
 $mysqli->set_charset('utf8');
 
+// $recent_row = $mysqli->query(
+//     "SELECT product_id FROM a_product ORDER BY product_id DESC LIMIT 1"
+// );
+
+// foreach ($recent_row as $row) {
+//     $ex_product_id = $row['product_id'];
+// }
+// echo $current_product_id = $ex_product_id + 1 . PHP_EOL;
+
+// $property_query = "INSERT INTO a_property VALUES(6, 'wewewewe')";
+// $mysqli->query($property_query);
+
 foreach ($xml as $product_key => $product) {
      // код продукта
     echo $product_code = $product->attributes()["Код"] . " ";
-
      // название продукта
     echo $product_name = $product->attributes()["Название"] . " ";
-
     $product_query = "INSERT INTO a_product VALUES(
         null,
         '$product_code',
         '$product_name')";
-
-    $mysqli->query($product_query);
+        $mysqli->query($product_query);
+    // текущий id продукта
+    $recent_row = $mysqli->query(
+        "SELECT product_id FROM a_product ORDER BY product_id DESC LIMIT 1"
+    );
+    foreach ($recent_row as $row) {
+        echo $current_product_id = $row['product_id'];
+    }
 
     // ищем цену
     foreach ($product->Цена as $price) {
@@ -122,12 +138,22 @@ foreach ($xml as $product_key => $product) {
         echo (float) $price->__toString() . " "; // цена
     }
     foreach ($product->Свойства->children() as $property) {
-        echo $property->getName() . " "; // название свойства
+        $property_name = $property->getName(); // название свойства
+        $attr_mame = null;
+        $attr_value = null;
+        $product_property  = null;
         if ($property->attributes()->count() > 0) {
-            echo $property->attributes()->getName() . " "; // название атрибута
-            echo $property->attributes()->__toString() . " "; // значение атрибута
+            $attr_mame = $property->attributes()->getName(); // название атрибута
+            $attr_value = $property->attributes(); // значение атрибута
+            echo $product_property = $property_name . "(" . $attr_mame . " " . $attr_value . "):" . $property;
+        } else {
+            echo $product_property = $property_name . ":" . $property . ";"; // значение свойства
         };
-        echo $property . " "; // значение свойства
+
+        // $property_query = "INSERT INTO a_property VALUES(
+        //     '$current_product_id',
+        //     '$product_property')";
+        // $mysqli->query($property_query);
     }
     foreach ($product->Разделы->children() as $category) {
         echo $category->__toString() . " "; // категория
