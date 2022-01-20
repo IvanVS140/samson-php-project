@@ -124,9 +124,14 @@ foreach ($xml as $product_key => $product) {
     // Цена продукта
     foreach ($product->Цена as $price) {
         foreach ($price->attributes() as $price_type) {
-            echo $price_type->__toString() . " "; // Тип цены
+            echo $price_name = $price_type->__toString() . " "; // Тип цены
         }
-        echo (float) $price->__toString() . " "; // Значение цены
+        echo $price_value = (float) $price->__toString() . " "; // Значение цены
+        $price_query = "INSERT INTO a_price VALUES(
+            '$current_product_id',
+            '$price_name',
+            '$price_value')";
+            $mysqli->query($price_query);
     }
     // Свойства продукта
     foreach ($product->Свойства->children() as $property) {
@@ -150,11 +155,11 @@ foreach ($xml as $product_key => $product) {
             '$product_property')";
         $mysqli->query($property_query);
     }
-    $current_product_id++;
     // Категория продукта
     foreach ($product->Разделы->children() as $category) {
         echo $category->__toString() . " "; // категория
     }
+    $current_product_id++;
     echo PHP_EOL . PHP_EOL;
 }
 
