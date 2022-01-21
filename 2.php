@@ -100,7 +100,8 @@ $xml = simplexml_load_file("products.xml");
 $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
 $mysqli->set_charset('utf8');
 
-$switch = 1;
+$switch = 1; // Выключатель для запроса текущего product_id
+$cat_vault = array(); // Хранилище категорий товаров
 foreach ($xml as $product_key => $product) {
      // Код продукта
     echo $product_code = $product->attributes()["Код"] . " ";
@@ -123,13 +124,13 @@ foreach ($xml as $product_key => $product) {
     }
     // Цена продукта
     foreach ($product->Цена as $price) {
-        foreach ($price->attributes() as $price_type) {
-            echo $price_name = $price_type->__toString() . " "; // Тип цены
+        foreach ($price->attributes() as $price_attr) {
+            echo $price_type = $price_attr->__toString() . " "; // Тип цены
         }
         echo $price_value = (float) $price->__toString() . " "; // Значение цены
         $price_query = "INSERT INTO a_price VALUES(
             '$current_product_id',
-            '$price_name',
+            '$price_type',
             '$price_value')";
             $mysqli->query($price_query);
     }
@@ -155,9 +156,12 @@ foreach ($xml as $product_key => $product) {
             '$product_property')";
         $mysqli->query($property_query);
     }
-    // Категория продукта
+    // Категории продукта
     foreach ($product->Разделы->children() as $category) {
-        echo $category->__toString() . " "; // категория
+        echo $prod_cat = $category->__toString() . " "; // Название категории
+        if (!in_array($prod_cat, $cat_vault)) {
+            array_push($cat_vault, $prod_cat);
+        }
     }
     $current_product_id++;
     echo PHP_EOL . PHP_EOL;

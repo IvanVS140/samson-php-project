@@ -2,12 +2,12 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
+
 -- -----------------------------------------------------
 -- Schema test_samson
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `test_samson` DEFAULT CHARACTER SET utf8 ;
 USE `test_samson` ;
-
 
 -- -----------------------------------------------------
 -- Table `test_samson`.`a_category`
@@ -47,7 +47,6 @@ CREATE TABLE IF NOT EXISTS `test_samson`.`a_price` (
   INDEX `fk_a_price_a_product1_idx` (`a_product_product_id` ASC),
   INDEX `price_type` (`price_type` ASC),
   INDEX `price` (`price` ASC),
-  PRIMARY KEY (`a_product_product_id`),
   CONSTRAINT `fk_a_price_a_product1`
     FOREIGN KEY (`a_product_product_id`)
     REFERENCES `test_samson`.`a_product` (`product_id`)
@@ -61,10 +60,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `test_samson`.`a_property` (
   `a_product_product_id` INT NOT NULL,
-  `property_value` VARCHAR(45) NOT NULL,
+  `property_value` VARCHAR(100) NOT NULL,
   INDEX `fk_a_property_a_product1_idx` (`a_product_product_id` ASC),
   INDEX `property_value` (`property_value` ASC),
-  PRIMARY KEY (`a_product_product_id`),
   CONSTRAINT `fk_a_property_a_product1`
     FOREIGN KEY (`a_product_product_id`)
     REFERENCES `test_samson`.`a_product` (`product_id`)
@@ -81,7 +79,6 @@ CREATE TABLE IF NOT EXISTS `test_samson`.`a_category_product` (
   `a_product_product_id` INT NOT NULL,
   INDEX `fk_a_category_has_a_product_a_product1_idx` (`a_product_product_id` ASC),
   INDEX `fk_a_category_has_a_product_a_category_idx` (`a_category_category_id` ASC),
-  PRIMARY KEY (`a_category_category_id`, `a_product_product_id`),
   CONSTRAINT `fk_a_category_has_a_product_a_category`
     FOREIGN KEY (`a_category_category_id`)
     REFERENCES `test_samson`.`a_category` (`category_id`)
