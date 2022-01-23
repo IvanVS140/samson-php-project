@@ -100,8 +100,7 @@ $xml = simplexml_load_file("products.xml");
 $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
 $mysqli->set_charset('utf8');
 
-$switch = 1; // Выключатель для запроса текущего product_id
-
+// Запрос уже существующих категорий товаров
 $query = "SELECT category_name FROM a_category ORDER BY category_id ";
 $result = $mysqli->query($query);
 $cat_vault = array();
@@ -109,9 +108,10 @@ $cat_vault = array();
 while ($Name = $result->fetch_column(0)) {
     array_push($cat_vault, $Name);
 }
-print_r($cat_vault);
 
-foreach ($xml as $product_key => $product) {
+$switch = 1; // Выключатель запроса текущего product_id
+
+foreach ($xml as $product) {
      // Код продукта
     echo $product_code = $product->attributes()["Код"] . " ";
      // Название продукта
@@ -183,18 +183,6 @@ foreach ($xml as $product_key => $product) {
     $current_product_id++;
     echo PHP_EOL . PHP_EOL;
 }
-
-/*
-foreach ($cat_vault as $cat_key => $cat_val) {
-    $cat_code = rand(1111, 9999); // Случайный код для категории. Нет в XML
-    $cat_query = "INSERT INTO a_category VALUES(
-        null,
-        '$cat_code',
-        '$cat_val')";
-    $mysqli->query($cat_query);
-}
-*/
-
 
 $mysqli->close();
 
