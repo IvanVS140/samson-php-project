@@ -101,7 +101,16 @@ $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
 $mysqli->set_charset('utf8');
 
 $switch = 1; // Выключатель для запроса текущего product_id
-$cat_vault = array(); // Хранилище категорий товаров
+
+$query = "SELECT category_name FROM a_category ORDER BY category_id ";
+$result = $mysqli->query($query);
+$cat_vault = array();
+// intelephense.diagnostics.undefinedMethods: false
+while ($Name = $result->fetch_column(0)) {
+    array_push($cat_vault, $Name);
+}
+print_r($cat_vault);
+
 foreach ($xml as $product_key => $product) {
      // Код продукта
     echo $product_code = $product->attributes()["Код"] . " ";
@@ -161,11 +170,31 @@ foreach ($xml as $product_key => $product) {
         echo $prod_cat = $category->__toString() . " "; // Название категории
         if (!in_array($prod_cat, $cat_vault)) {
             array_push($cat_vault, $prod_cat);
+            $cat_code = rand(1111, 9999); // Случайный код для категории
+            $cat_query = "INSERT INTO a_category VALUES(
+                null,
+                '$cat_code',
+                '$prod_cat')";
+            $mysqli->query($cat_query);
+            // array_push($cat_vault, $prod_cat);
+            // print_r($cat_vault);
         }
-    }
+    };
     $current_product_id++;
     echo PHP_EOL . PHP_EOL;
 }
+
+/*
+foreach ($cat_vault as $cat_key => $cat_val) {
+    $cat_code = rand(1111, 9999); // Случайный код для категории. Нет в XML
+    $cat_query = "INSERT INTO a_category VALUES(
+        null,
+        '$cat_code',
+        '$cat_val')";
+    $mysqli->query($cat_query);
+}
+*/
+
 
 $mysqli->close();
 
