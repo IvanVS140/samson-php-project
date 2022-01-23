@@ -101,21 +101,21 @@ $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
 $mysqli->set_charset('utf8');
 
 // Запрос уже существующих категорий товаров
-$query = "SELECT category_name FROM a_category ORDER BY category_id ";
-$result = $mysqli->query($query);
+$ex_cat_query = "SELECT category_name FROM a_category ORDER BY category_id ";
+$ex_cat = $mysqli->query($ex_cat_query);
 $cat_vault = array();
 // intelephense.diagnostics.undefinedMethods: false
-while ($Name = $result->fetch_column(0)) {
-    array_push($cat_vault, $Name);
+while ($cat = $ex_cat->fetch_column(0)) {
+    array_push($cat_vault, $cat);
 }
 
 $switch = 1; // Выключатель запроса текущего product_id
 
-foreach ($xml as $product) {
+foreach ($xml as $prod) {
      // Код продукта
-    echo $product_code = $product->attributes()["Код"] . " ";
+    echo $product_code = $prod->attributes()["Код"] . " ";
      // Название продукта
-    echo $product_name = $product->attributes()["Название"] . " ";
+    echo $product_name = $prod->attributes()["Название"] . " ";
     $product_query = "INSERT INTO a_product VALUES(
         null,
         '$product_code',
@@ -132,7 +132,7 @@ foreach ($xml as $product) {
         $switch = 0;
     }
     // Цена продукта
-    foreach ($product->Цена as $price) {
+    foreach ($prod->Цена as $price) {
         foreach ($price->attributes() as $price_attr) {
             echo $price_type = $price_attr->__toString() . " "; // Тип цены
         }
@@ -144,7 +144,7 @@ foreach ($xml as $product) {
             $mysqli->query($price_query);
     }
     // Свойства продукта
-    foreach ($product->Свойства->children() as $property) {
+    foreach ($prod->Свойства->children() as $property) {
         $property_name = $property->getName(); // Название свойства
         $attr_mame = null; // Атрибут свойства
         $attr_value = null; // Значение атрибута свойства
@@ -166,7 +166,7 @@ foreach ($xml as $product) {
         $mysqli->query($property_query);
     }
     // Категории продукта
-    foreach ($product->Разделы->children() as $category) {
+    foreach ($prod->Разделы->children() as $category) {
         echo $prod_cat = $category->__toString() . " "; // Название категории
         if (!in_array($prod_cat, $cat_vault)) {
             array_push($cat_vault, $prod_cat);
