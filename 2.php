@@ -93,27 +93,24 @@ foreach ($test_array as $arr) {
 }
 
 // MySQL
-echo PHP_EOL;
-
-$xml_to_import = "products.xml";
 
 /**
  * Imports XML file into MySQL database
  *
- * @param mixed $a XML path to import
+ * @param string $a path to XML to import
  *
- * @return void
+ * @return void import only
  */
 function importXml($a)
 {
-    $xml = simplexml_load_file("products.xml");
-
     $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
     $mysqli->set_charset('utf8');
 
     // Query to already existing product categories
-    $prev_cat_query = "SELECT category_name FROM a_category ORDER BY
-    category_id ";
+    $prev_cat_query
+        = "SELECT category_name
+        FROM a_category
+        ORDER BY category_id";
     $prev_cat_list = $mysqli->query($prev_cat_query);
     $cat_vault = array(); // categories vault
     // vscode: intelephense.diagnostics.undefinedMethods: false
@@ -121,20 +118,28 @@ function importXml($a)
         array_push($cat_vault, $prev_cat);
     }
 
-    $switch = 1; // current product_id query swich
+    $xml = simplexml_load_file($a);
+
+    /*
+    Current product_id query swich.
+    Сreated to reduce the number of database calls by finding the last value of
+    product_id in a_product table and then using auto-increment on it
+    */
+    $switch = 1;
 
     foreach ($xml as $prod) {
-        // Product
+        // Product code and name
         $prod_code = $prod->attributes()["Код"]; // product code
         $prod_name = $prod->attributes()["Название"]; // product name
         $prod_query = "INSERT INTO a_product VALUES(
-            null,
-        '$prod_code',
-        '$prod_name')";
+            null, /* AI in the database */
+            '$prod_code',
+            '$prod_name')";
         $mysqli->query($prod_query);
         // Product ID
         if ($switch == 1) {
-            $rec_row_query // query to last added product_id cell
+            // query to last added product_id in a_product table
+            $rec_row_query
                 = "SELECT product_id FROM a_product ORDER BY product_id DESC
                 LIMIT 1";
             $rec_row = $mysqli->query($rec_row_query);
@@ -163,7 +168,8 @@ function importXml($a)
                 // propety attribute name
                 $prop_attr_mame = $prop->attributes()->getName();
                 $prop_attr_val = $prop->attributes(); // propety attribute value
-                $prod_prop // property (summary) value if attributes are available
+                // property value (data summary) if attributes are available
+                $prod_prop
                     = $prop_name
                     . "("
                     . $prop_attr_mame
@@ -172,7 +178,8 @@ function importXml($a)
                     . "):"
                     . $prop;
             } else {
-                $prod_prop // property (summary) value if there is no attributes
+                // property value (data summary) if there is no attributes
+                $prod_prop
                     = $prop_name
                     . ":"
                     . $prop
@@ -188,8 +195,9 @@ function importXml($a)
             $prod_cat = $cat->__toString(); // category name
             if (!in_array($prod_cat, $cat_vault)) {
                 array_push($cat_vault, $prod_cat);
-                // random category code for sample upload
-                $cat_code = rand(1111, 9999); // category code
+                /* random category code (missing in the test XML)
+                for sample upload */
+                $cat_code = rand(1000, 9999);
                 $cat_query = "INSERT INTO a_category VALUES(
                     null,
                     '$cat_code',
@@ -197,14 +205,14 @@ function importXml($a)
                 $mysqli->query($cat_query);
             }
         };
-        $curr_prod_id++;
+        $curr_prod_id++; // declared auto-increment
     }
     $mysqli->close();
 }
 
-importXml($xml_to_import);
+$path_to_xml = "files/products.xml";
 
-echo "query done";
+importXml($path_to_xml);
 
 // phpcs:ignore PSR2.Files.ClosingTag.NotAllowed
 ?>
