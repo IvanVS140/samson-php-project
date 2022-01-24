@@ -101,73 +101,76 @@ $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
 $mysqli->set_charset('utf8');
 
 // Запрос уже существующих категорий товаров
-$ex_cat_query = "SELECT category_name FROM a_category ORDER BY category_id ";
-$ex_cat = $mysqli->query($ex_cat_query);
+$prev_cat_query = "SELECT category_name FROM a_category ORDER BY category_id ";
+$prev_cat_list = $mysqli->query($prev_cat_query);
 $cat_vault = array();
-// intelephense.diagnostics.undefinedMethods: false
-while ($cat = $ex_cat->fetch_column(0)) {
-    array_push($cat_vault, $cat);
+// vscode: intelephense.diagnostics.undefinedMethods: false
+while ($prev_cat = $prev_cat_list->fetch_column(0)) {
+    array_push($cat_vault, $prev_cat);
 }
 
-$switch = 1; // Выключатель запроса текущего product_id
+$switch = 1; // Выключатель для запроса текущего product_id
 
 foreach ($xml as $prod) {
-     // Код продукта
-    echo $product_code = $prod->attributes()["Код"] . " ";
-     // Название продукта
-    echo $product_name = $prod->attributes()["Название"] . " ";
-    $product_query = "INSERT INTO a_product VALUES(
+    $prod_code = $prod->attributes()["Код"]; // Код продукта
+    $prod_name = $prod->attributes()["Название"]; // Название продукта
+    $prod_query = "INSERT INTO a_product VALUES(
         null,
-        '$product_code',
-        '$product_name')";
-        $mysqli->query($product_query);
+        '$prod_code',
+        '$prod_name')";
+        $mysqli->query($prod_query);
     // id продукта
     if ($switch == 1) {
-        $recent_row = $mysqli->query(
-            "SELECT product_id FROM a_product ORDER BY product_id DESC LIMIT 1"
-        );
-        foreach ($recent_row as $row) {
-            $current_product_id = $row['product_id'];
+        $rec_row_query
+            = "SELECT product_id FROM a_product ORDER BY product_id DESC LIMIT
+            1";
+        $rec_row = $mysqli->query($rec_row_query);
+        foreach ($rec_row as $row) {
+            $curr_prod_id = $row['product_id'];
         }
         $switch = 0;
     }
     // Цена продукта
     foreach ($prod->Цена as $price) {
         foreach ($price->attributes() as $price_attr) {
-            echo $price_type = $price_attr->__toString() . " "; // Тип цены
+            $price_type = $price_attr->__toString(); // Тип цены
         }
-        echo $price_value = (float) $price->__toString() . " "; // Значение цены
+        $price_val = (float) $price->__toString(); // Значение цены
         $price_query = "INSERT INTO a_price VALUES(
-            '$current_product_id',
+            '$curr_prod_id',
             '$price_type',
-            '$price_value')";
+            '$price_val')";
             $mysqli->query($price_query);
     }
     // Свойства продукта
-    foreach ($prod->Свойства->children() as $property) {
-        $property_name = $property->getName(); // Название свойства
-        $attr_mame = null; // Атрибут свойства
-        $attr_value = null; // Значение атрибута свойства
-        $product_property  = null; // Значение свойства целиком
-        if ($property->attributes()->count() > 0) {
-            $attr_mame = $property->attributes()->getName();
-            $attr_value = $property->attributes();
-            echo $product_property
-                = $property_name .
-                "(" . $attr_mame .
-                " " . $attr_value .
-                "):" . $property;
+    foreach ($prod->Свойства->children() as $prop) {
+        $prop_name = $prop->getName(); // Название свойства
+        if ($prop->attributes()->count() > 0) {
+            $prop_attr_mame = $prop->attributes()->getName();
+            $prop_attr_val = $prop->attributes();
+            $prod_prop
+                = $prop_name
+                . "("
+                . $prop_attr_mame
+                . " "
+                . $prop_attr_val
+                . "):"
+                . $prop;
         } else {
-            echo $product_property = $property_name . ":" . $property . ";";
+            $prod_prop
+                = $prop_name
+                . ":"
+                . $prop
+                . ";";
         };
-        $property_query = "INSERT INTO a_property VALUES(
-            '$current_product_id',
-            '$product_property')";
-        $mysqli->query($property_query);
+        $prop_query = "INSERT INTO a_property VALUES(
+            '$curr_prod_id',
+            '$prod_prop')";
+        $mysqli->query($prop_query);
     }
     // Категории продукта
-    foreach ($prod->Разделы->children() as $category) {
-        echo $prod_cat = $category->__toString() . " "; // Название категории
+    foreach ($prod->Разделы->children() as $cat) {
+        $prod_cat = $cat->__toString(); // Название категории
         if (!in_array($prod_cat, $cat_vault)) {
             array_push($cat_vault, $prod_cat);
             $cat_code = rand(1111, 9999); // Случайный код для категории
@@ -176,12 +179,9 @@ foreach ($xml as $prod) {
                 '$cat_code',
                 '$prod_cat')";
             $mysqli->query($cat_query);
-            // array_push($cat_vault, $prod_cat);
-            // print_r($cat_vault);
         }
     };
-    $current_product_id++;
-    echo PHP_EOL . PHP_EOL;
+    $curr_prod_id++;
 }
 
 $mysqli->close();
