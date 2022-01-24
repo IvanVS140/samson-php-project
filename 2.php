@@ -95,100 +95,114 @@ foreach ($test_array as $arr) {
 // MySQL
 echo PHP_EOL;
 
-$xml = simplexml_load_file("products.xml");
+$xml_to_import = "products.xml";
 
-$mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
-$mysqli->set_charset('utf8');
+/**
+ * Imports XML file into MySQL database
+ *
+ * @param mixed $a XML path to import
+ *
+ * @return void
+ */
+function importXml($a)
+{
+    $xml = simplexml_load_file("products.xml");
 
-// Query to already existing product categories
-$prev_cat_query = "SELECT category_name FROM a_category ORDER BY category_id ";
-$prev_cat_list = $mysqli->query($prev_cat_query);
-$cat_vault = array(); // categories vault
-// vscode: intelephense.diagnostics.undefinedMethods: false
-while ($prev_cat = $prev_cat_list->fetch_column(0)) {
-    array_push($cat_vault, $prev_cat);
-}
+    $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
+    $mysqli->set_charset('utf8');
 
-$switch = 1; // current product_id query swich
+    // Query to already existing product categories
+    $prev_cat_query = "SELECT category_name FROM a_category ORDER BY
+    category_id ";
+    $prev_cat_list = $mysqli->query($prev_cat_query);
+    $cat_vault = array(); // categories vault
+    // vscode: intelephense.diagnostics.undefinedMethods: false
+    while ($prev_cat = $prev_cat_list->fetch_column(0)) {
+        array_push($cat_vault, $prev_cat);
+    }
 
-foreach ($xml as $prod) {
-    // Product
-    $prod_code = $prod->attributes()["Код"]; // product code
-    $prod_name = $prod->attributes()["Название"]; // product name
-    $prod_query = "INSERT INTO a_product VALUES(
-        null,
+    $switch = 1; // current product_id query swich
+
+    foreach ($xml as $prod) {
+        // Product
+        $prod_code = $prod->attributes()["Код"]; // product code
+        $prod_name = $prod->attributes()["Название"]; // product name
+        $prod_query = "INSERT INTO a_product VALUES(
+            null,
         '$prod_code',
         '$prod_name')";
         $mysqli->query($prod_query);
-    // Product ID
-    if ($switch == 1) {
-        $rec_row_query // query to last added product_id cell
-            = "SELECT product_id FROM a_product ORDER BY product_id DESC LIMIT
-            1";
-        $rec_row = $mysqli->query($rec_row_query);
-        foreach ($rec_row as $row) {
-            $curr_prod_id = $row['product_id']; // current product ID
+        // Product ID
+        if ($switch == 1) {
+            $rec_row_query // query to last added product_id cell
+                = "SELECT product_id FROM a_product ORDER BY product_id DESC
+                LIMIT 1";
+            $rec_row = $mysqli->query($rec_row_query);
+            foreach ($rec_row as $row) {
+                $curr_prod_id = $row['product_id']; // current product ID
+            }
+            $switch = 0;
         }
-        $switch = 0;
-    }
-    // Product price
-    foreach ($prod->Цена as $price) {
-        foreach ($price->attributes() as $price_attr) {
-            $price_type = $price_attr->__toString(); // price type
-        }
-        $price_val = (float) $price->__toString(); // price value
-        $price_query = "INSERT INTO a_price VALUES(
-            '$curr_prod_id',
-            '$price_type',
-            '$price_val')";
+        // Product price
+        foreach ($prod->Цена as $price) {
+            foreach ($price->attributes() as $price_attr) {
+                $price_type = $price_attr->__toString(); // price type
+            }
+            $price_val = (float) $price->__toString(); // price value
+            $price_query = "INSERT INTO a_price VALUES(
+                '$curr_prod_id',
+                '$price_type',
+                '$price_val')";
             $mysqli->query($price_query);
-    }
-    // Product properties
-    foreach ($prod->Свойства->children() as $prop) {
-        $prop_name = $prop->getName(); // propety name
-         // if the property has an attribute(s)
-        if ($prop->attributes()->count() > 0) {
-            // propety attribute name
-            $prop_attr_mame = $prop->attributes()->getName();
-            $prop_attr_val = $prop->attributes(); // propety attribute value
-            $prod_prop // property (summary) value if attributes are available
-                = $prop_name
-                . "("
-                . $prop_attr_mame
-                . " "
-                . $prop_attr_val
-                . "):"
-                . $prop;
-        } else {
-            $prod_prop // property (summary) value if there is no attributes
-                = $prop_name
-                . ":"
-                . $prop
-                . ";";
-        };
-        $prop_query = "INSERT INTO a_property VALUES(
-            '$curr_prod_id',
-            '$prod_prop')";
-        $mysqli->query($prop_query);
-    }
-    // Product categories
-    foreach ($prod->Разделы->children() as $cat) {
-        $prod_cat = $cat->__toString(); // category name
-        if (!in_array($prod_cat, $cat_vault)) {
-            array_push($cat_vault, $prod_cat);
-            // random category code for sample upload
-            $cat_code = rand(1111, 9999); // category code
-            $cat_query = "INSERT INTO a_category VALUES(
-                null,
-                '$cat_code',
-                '$prod_cat')";
-            $mysqli->query($cat_query);
         }
-    };
-    $curr_prod_id++;
+        // Product properties
+        foreach ($prod->Свойства->children() as $prop) {
+            $prop_name = $prop->getName(); // propety name
+            // if the property has an attribute(s)
+            if ($prop->attributes()->count() > 0) {
+                // propety attribute name
+                $prop_attr_mame = $prop->attributes()->getName();
+                $prop_attr_val = $prop->attributes(); // propety attribute value
+                $prod_prop // property (summary) value if attributes are available
+                    = $prop_name
+                    . "("
+                    . $prop_attr_mame
+                    . " "
+                    . $prop_attr_val
+                    . "):"
+                    . $prop;
+            } else {
+                $prod_prop // property (summary) value if there is no attributes
+                    = $prop_name
+                    . ":"
+                    . $prop
+                    . ";";
+            };
+            $prop_query = "INSERT INTO a_property VALUES(
+                '$curr_prod_id',
+                '$prod_prop')";
+            $mysqli->query($prop_query);
+        }
+        // Product categories
+        foreach ($prod->Разделы->children() as $cat) {
+            $prod_cat = $cat->__toString(); // category name
+            if (!in_array($prod_cat, $cat_vault)) {
+                array_push($cat_vault, $prod_cat);
+                // random category code for sample upload
+                $cat_code = rand(1111, 9999); // category code
+                $cat_query = "INSERT INTO a_category VALUES(
+                    null,
+                    '$cat_code',
+                    '$prod_cat')";
+                $mysqli->query($cat_query);
+            }
+        };
+        $curr_prod_id++;
+    }
+    $mysqli->close();
 }
 
-$mysqli->close();
+importXml($xml_to_import);
 
 echo "query done";
 
