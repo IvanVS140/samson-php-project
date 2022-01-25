@@ -97,7 +97,7 @@ foreach ($test_array as $arr) {
 /**
  * Imports XML file into MySQL database
  *
- * @param string $a path to XML to import
+ * @param string $a path to XML file to import
  *
  * @return void import only
  */
@@ -140,8 +140,10 @@ function importXml($a)
         if ($switch == 1) {
             // query to last added product_id in a_product table
             $rec_row_query
-                = "SELECT product_id FROM a_product ORDER BY product_id DESC
-                LIMIT 1";
+                = "SELECT product_id
+                FROM a_product
+                ORDER BY product_id
+                DESC LIMIT 1";
             $rec_row = $mysqli->query($rec_row_query);
             foreach ($rec_row as $row) {
                 $curr_prod_id = $row['product_id']; // current product ID
@@ -165,23 +167,24 @@ function importXml($a)
             $prop_name = $prop->getName(); // propety name
             // if the property has an attribute(s)
             if ($prop->attributes()->count() > 0) {
-                // propety attribute name
-                $prop_attr_mame = $prop->attributes()->getName();
-                $prop_attr_val = $prop->attributes(); // propety attribute value
-                // property value (data summary) if attributes are available
+                $prop_attr_full = ""; // the sum of all property attributes
+                foreach ($prop->attributes() as $prop_attr) {
+                    $attr_name = $prop_attr->getName(); // attribute name
+                    $attr_val = $prop_attr[0]->__toString(); // attribute value
+                    $prop_attr_full .= $attr_name . " " . $attr_val . ", ";
+                }
+                // property value (data summary) if there are an attributes
                 $prod_prop
                     = $prop_name
-                    . "("
-                    . $prop_attr_mame
-                    . " "
-                    . $prop_attr_val
-                    . "):"
-                    . $prop;
+                    . ": (" .
+                    substr($prop_attr_full, 0, -2)
+                    . "): "
+                    . $prop; // property value
             } else {
                 // property value (data summary) if there is no attributes
                 $prod_prop
                     = $prop_name
-                    . ":"
+                    . ": "
                     . $prop
                     . ";";
             };
@@ -195,11 +198,11 @@ function importXml($a)
             $prod_cat = $cat->__toString(); // category name
             if (!in_array($prod_cat, $cat_vault)) {
                 array_push($cat_vault, $prod_cat);
-                /* random category code (missing in the test XML)
-                for sample upload */
+                /* random category code (missing in the test XML) for sample
+                upload */
                 $cat_code = rand(1000, 9999);
                 $cat_query = "INSERT INTO a_category VALUES(
-                    null,
+                    null, /* AI in the database */
                     '$cat_code',
                     '$prod_cat')";
                 $mysqli->query($cat_query);
