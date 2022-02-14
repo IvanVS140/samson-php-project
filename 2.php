@@ -135,7 +135,7 @@ function importXml($a)
             null, /* AI in the database */
             '$prod_code',
             '$prod_name')";
-        $mysqli->query($prod_query);
+        // $mysqli->query($prod_query);
         // Product ID
         if ($switch == 1) {
             // query to last added product_id in a_product table
