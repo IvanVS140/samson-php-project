@@ -217,5 +217,7 @@ $path_to_xml = "files/products.xml";
 
 importXml($path_to_xml);
 
+echo "all code passed";
+
 // phpcs:ignore PSR2.Files.ClosingTag.NotAllowed
 ?>
