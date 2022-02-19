@@ -106,6 +106,13 @@ function importXml($a)
     $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
     $mysqli->set_charset('utf8');
 
+    // injection prevention sample
+    $foo = "Baz";
+
+    $bar = $mysqli->real_escape_string($foo);
+    $query = "SELECT * FROM `articles` WHERE `id` = '$bar'";
+    // injection prevention sample
+
     // Query to already existing product categories
     $prev_cat_query
         = "SELECT category_name
