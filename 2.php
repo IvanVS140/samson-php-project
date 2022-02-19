@@ -160,7 +160,7 @@ function importXml($a)
                 '$curr_prod_id',
                 '$price_type',
                 '$price_val')";
-            $mysqli->query($price_query);
+            // $mysqli->query($price_query);
         }
         // Product properties
         foreach ($prod->Свойства->children() as $prop) {
@@ -191,7 +191,7 @@ function importXml($a)
             $prop_query = "INSERT INTO a_property VALUES(
                 '$curr_prod_id',
                 '$prod_prop')";
-            $mysqli->query($prop_query);
+            // $mysqli->query($prop_query);
         }
         // Product categories
         foreach ($prod->Разделы->children() as $cat) {
@@ -205,7 +205,7 @@ function importXml($a)
                     null, /* AI in the database */
                     '$cat_code',
                     '$prod_cat')";
-                $mysqli->query($cat_query);
+                // $mysqli->query($cat_query);
             }
         };
         $curr_prod_id++; // declared auto-increment
