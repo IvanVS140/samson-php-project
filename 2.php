@@ -106,13 +106,6 @@ function importXml($a)
     $mysqli = new mysqli('localhost', 'ivanvs140', 'EBGDAE', 'test_samson');
     $mysqli->set_charset('utf8');
 
-    // injection prevention sample
-    $foo = "Baz";
-
-    $bar = $mysqli->real_escape_string($foo);
-    $query = "SELECT * FROM `articles` WHERE `id` = '$bar'";
-    // injection prevention sample
-
     // Query to already existing product categories
     $prev_cat_query
         = "SELECT category_name
@@ -135,14 +128,15 @@ function importXml($a)
     $switch = 1;
 
     foreach ($xml as $prod) {
-        // Product code and name
-        $prod_code = $prod->attributes()["Код"]; // product code
-        $prod_name = $prod->attributes()["Название"]; // product name
+        $prod_code // product code
+            = $mysqli->real_escape_string($prod->attributes()["Код"]);
+        $prod_name // product name
+            = $mysqli->real_escape_string($prod->attributes()["Название"]);
         $prod_query = "INSERT INTO a_product VALUES(
             null, /* AI in the database */
             '$prod_code',
             '$prod_name')";
-        // $mysqli->query($prod_query);
+        $mysqli->query($prod_query);
         // Product ID
         if ($switch == 1) {
             // query to last added product_id in a_product table
@@ -160,24 +154,30 @@ function importXml($a)
         // Product price
         foreach ($prod->Цена as $price) {
             foreach ($price->attributes() as $price_attr) {
-                $price_type = $price_attr->__toString(); // price type
+                $price_type // price type
+                    = $mysqli->real_escape_string($price_attr->__toString());
             }
-            $price_val = (float) $price->__toString(); // price value
+            $price_val // price value
+                = $mysqli->real_escape_string((float) $price->__toString());
             $price_query = "INSERT INTO a_price VALUES(
                 '$curr_prod_id',
                 '$price_type',
                 '$price_val')";
-            // $mysqli->query($price_query);
+            $mysqli->query($price_query);
         }
         // Product properties
         foreach ($prod->Свойства->children() as $prop) {
-            $prop_name = $prop->getName(); // propety name
+             // propety name
+            $prop_name = $mysqli->real_escape_string($prop->getName());
             // if the property has an attribute(s)
+            $prop_val = $mysqli->real_escape_string($prop); // property value
             if ($prop->attributes()->count() > 0) {
                 $prop_attr_full = ""; // the sum of all property attributes
                 foreach ($prop->attributes() as $prop_attr) {
-                    $attr_name = $prop_attr->getName(); // attribute name
-                    $attr_val = $prop_attr[0]->__toString(); // attribute value
+                    $attr_name // attribute name
+                        = $mysqli->real_escape_string($prop_attr->getName());
+                    $attr_val // attribute value
+                        = $mysqli->real_escape_string($prop_attr[0]->__toString());
                     $prop_attr_full .= $attr_name . " " . $attr_val . ", ";
                 }
                 // property value (data summary) if there are an attributes
@@ -186,23 +186,24 @@ function importXml($a)
                     . ": (" .
                     substr($prop_attr_full, 0, -2)
                     . "): "
-                    . $prop; // property value
+                    . $prop_val;
             } else {
                 // property value (data summary) if there is no attributes
                 $prod_prop
                     = $prop_name
                     . ": "
-                    . $prop
+                    . $prop_val
                     . ";";
             };
             $prop_query = "INSERT INTO a_property VALUES(
                 '$curr_prod_id',
                 '$prod_prop')";
-            // $mysqli->query($prop_query);
+            $mysqli->query($prop_query);
         }
         // Product categories
         foreach ($prod->Разделы->children() as $cat) {
-            $prod_cat = $cat->__toString(); // category name
+            // category name
+            $prod_cat = $mysqli->real_escape_string($cat->__toString());
             if (!in_array($prod_cat, $cat_vault)) {
                 array_push($cat_vault, $prod_cat);
                 /* random category code (missing in the test XML) for sample
@@ -212,10 +213,10 @@ function importXml($a)
                     null, /* AI in the database */
                     '$cat_code',
                     '$prod_cat')";
-                // $mysqli->query($cat_query);
+                $mysqli->query($cat_query);
             }
         };
-        $curr_prod_id++; // declared auto-increment
+        $curr_prod_id++; // auto-increment that declared on line 131
     }
     $mysqli->close();
 }
