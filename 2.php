@@ -216,7 +216,7 @@ function importXml($a)
                 $mysqli->query($cat_query);
             }
         };
-        $curr_prod_id++; // auto-increment that declared on line 131
+        $curr_prod_id++; // auto-increment earlier declared
     }
     $mysqli->close();
 }
