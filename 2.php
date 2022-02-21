@@ -155,10 +155,10 @@ function importXml($a)
         foreach ($prod->Цена as $price) {
             foreach ($price->attributes() as $price_attr) {
                 $price_type // price type
-                    = $mysqli->real_escape_string($price_attr->__toString());
+                    = $mysqli->real_escape_string($price_attr);
             }
             $price_val // price value
-                = $mysqli->real_escape_string((float) $price->__toString());
+                = $mysqli->real_escape_string((float) $price);
             $price_query = "INSERT INTO a_price VALUES(
                 '$curr_prod_id',
                 '$price_type',
@@ -177,7 +177,7 @@ function importXml($a)
                     $attr_name // attribute name
                         = $mysqli->real_escape_string($prop_attr->getName());
                     $attr_val // attribute value
-                        = $mysqli->real_escape_string($prop_attr[0]->__toString());
+                        = $mysqli->real_escape_string($prop_attr[0]);
                     $prop_attr_full .= $attr_name . " " . $attr_val . ", ";
                 }
                 // property value (data summary) if there are an attributes
@@ -203,7 +203,7 @@ function importXml($a)
         // Product categories
         foreach ($prod->Разделы->children() as $cat) {
             // category name
-            $prod_cat = $mysqli->real_escape_string($cat->__toString());
+            $prod_cat = $mysqli->real_escape_string($cat);
             if (!in_array($prod_cat, $cat_vault)) {
                 array_push($cat_vault, $prod_cat);
                 /* random category code (missing in the test XML) for sample
@@ -224,8 +224,6 @@ function importXml($a)
 $path_to_xml = "files/products.xml";
 
 importXml($path_to_xml);
-
-echo "all code passed";
 
 // phpcs:ignore PSR2.Files.ClosingTag.NotAllowed
 ?>
