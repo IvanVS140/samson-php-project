@@ -15,10 +15,11 @@ echo "<pre>";
  */
 class WeatherEntry
 {
-    private $date; // phpcs:ignore
-    private $comment = ""; // phpcs:ignore
-    private $temperature = 0; // phpcs:ignore
-    private $isRainy = false; // phpcs:ignore
+    private $date; // phpcs:ignore PEAR.NamingConventions
+    private $comment = ""; // phpcs:ignore PEAR.NamingConventions
+    private $temperature = 0; // phpcs:ignore PEAR.NamingConventions
+
+    private $isRainy = false; // phpcs:ignore PEAR.NamingConventions
 
     /**
      * __construct
@@ -69,9 +70,9 @@ class WeatherEntry
         $delta = time() - $dt;
         $days = ceil($delta / 86400);
 
-        $qwe = $this->comment;
+        $add_comment = $this->comment;
 
-        $res = "Это было $days дней назад. $qwe. В тот день было ";
+        $res = "Это было $days дней назад. $add_comment. В тот день было ";
 
         if ($this->isCold()) {
             $res .= "холодно. ";
