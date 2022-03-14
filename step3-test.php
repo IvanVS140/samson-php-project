@@ -71,7 +71,7 @@ class NewBase // переименован класс
     /**
      * __sleep() - Магический метод для serialize()
      *
-     * @return value
+     * @return $value
      */
     public function __sleep()
     {
@@ -98,16 +98,22 @@ class NewBase // переименован класс
      */
     public function getSave(): string
     {
-        $value = serialize($this->value);
+        $value = serialize($value);
         return $this->name . ':' . sizeof($value) . ':' . $value;
     }
+
+    // Вызов метода класса без создания экземпляра
     /**
-     * @return newBase
+     * Load
+     *
+     * @param mixed $value comment here
+     *
+     * @return NewBase
      */
-    public static function load(string $value): newBase // static <-> public
+    public static function load(string $value): NewBase // static <-> public
     {
         $arValue = explode(':', $value);
-        return (new newBase($arValue[0]))
+        return (new NewBase($arValue[0]))
             ->setValue(unserialize(substr($value, strlen($arValue[0]) + 1
                 + strlen($arValue[1]) + 1), $arValue[1]));
     }

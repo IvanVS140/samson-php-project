@@ -96,13 +96,7 @@ $firstSeptember->setRainStatus(false);
 print($firstSeptember->getDayDescription());
 
 echo PHP_EOL;
+echo PHP_EOL;
 
-$foo = "qwerty";
-
-echo strlen(serialize($foo));
-
-$foo = serialize($foo);
+$foo = "barbazfoobarfoobarbaz";
 echo strlen($foo);
-
-$bar = [1, 3, 6, 0, 23];
-echo sizeof($bar);
