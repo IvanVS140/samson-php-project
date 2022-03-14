@@ -16,9 +16,9 @@ echo "<pre>";
  */
 class NewBase // переименован класс
 {
-    // phpcs:ignore PEAR.NamingConventions.ValidVariableName.PrivateNoUnderscore
+    // phpcs:ignore PEAR.NamingConventions
     private static $count = 0; // поменял местами private и static
-    // phpcs:ignore PEAR.NamingConventions.ValidVariableName.PrivateNoUnderscore
+    // phpcs:ignore PEAR.NamingConventions
     private static $arSetName = []; // поменял местами private и static
 
     // исправил док комент
@@ -41,8 +41,7 @@ class NewBase // переименован класс
         self::$arSetName[] = $this->name;
     }
 
-    // phpcs:ignore PEAR.NamingConventions.ValidVariableName.PrivateNoUnderscore
-    private $name;
+    private $name; // phpcs:ignore PEAR.NamingConventions
     // исправил док комент
     /**
      * GetName
@@ -55,7 +54,7 @@ class NewBase // переименован класс
     }
 
     protected $value;
-    // исправил док комент
+    // исправил док коммент
     /**
      * SetValue
      *
@@ -68,7 +67,18 @@ class NewBase // переименован класс
         $this->value = $value;
     }
 
-    // исправил док комент
+    // добавил док комент. У становлен до всех serialize()
+    /**
+     * __sleep() - Магический метод для serialize()
+     *
+     * @return value
+     */
+    public function __sleep()
+    {
+        return array("value"); // исправлено на функцию
+    }
+
+    // исправил док коммент
     /**
      * GetSize
      *
@@ -82,30 +92,19 @@ class NewBase // переименован класс
 
     // добавил док комент
     /**
-     * __sleep
-     *
-     * @return void
-     */
-    public function __sleep()
-    {
-        return ['value'];
-    }
-
-    // добавил док комент
-    /**
      * GetSave
      *
      * @return string
      */
     public function getSave(): string
     {
-        $value = serialize($value);
+        $value = serialize($this->value);
         return $this->name . ':' . sizeof($value) . ':' . $value;
     }
     /**
      * @return newBase
      */
-    static public function load(string $value): newBase
+    public static function load(string $value): newBase // static <-> public
     {
         $arValue = explode(':', $value);
         return (new newBase($arValue[0]))

@@ -94,3 +94,15 @@ $firstSeptember = new WeatherEntry("2018-09-01", "День знаний", 14);
 $firstSeptember->setRainStatus(false);
 
 print($firstSeptember->getDayDescription());
+
+echo PHP_EOL;
+
+$foo = "qwerty";
+
+echo strlen(serialize($foo));
+
+$foo = serialize($foo);
+echo strlen($foo);
+
+$bar = [1, 3, 6, 0, 23];
+echo sizeof($bar);
