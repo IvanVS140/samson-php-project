@@ -113,8 +113,6 @@ class NewBase // переименован класс
     public static function load(string $value): NewBase // static <-> public
     {
         $arValue = explode(':', $value);
-        return (new NewBase($arValue[0]))
-            ->setValue(unserialize(substr($value, strlen($arValue[0]) + 1
-                + strlen($arValue[1]) + 1), $arValue[1]));
+        return (new NewBase($arValue[0]))->setValue(unserialize(substr($value, strlen($arValue[0]) + 1 + strlen($arValue[1]) + 1), $arValue[1]));
     }
 }
