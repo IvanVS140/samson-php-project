@@ -2,7 +2,7 @@
 
 namespace Test3;
 
-echo "<pre>";
+//echo "<pre>";
 
 /**
  * NewBase
@@ -110,40 +110,44 @@ class NewBase
     }
 }
 
+echo PHP_EOL;
+echo "1) Создание нового объекта (база данных с именем 'Base1')";
 $obj = new newBase('Base1');
-
-echo "1) Вывод текущего имени: " . $obj->getName();
 echo PHP_EOL;
 echo PHP_EOL;
 
-echo "2) Устанавливаем новое имя с помощью функции setName()";
+echo "2) Вывод текущего имени: " . $obj->getName();
+echo PHP_EOL;
+echo PHP_EOL;
+
+echo "3) Устанавливаем новое имя с помощью функции setName()";
 $obj->setName('New_base');
 echo PHP_EOL;
 echo "   Вывод текущего имени: " . $obj->getName();
 echo PHP_EOL;
 echo PHP_EOL;
 
-echo "3) Устанавливаем значение с помощью функции  setValue()";
+echo "4) Устанавливаем значение с помощью функции  setValue()";
 $obj->setValue('Julia');
 echo PHP_EOL;
 echo "   Вывод установленного значения: " . $obj->getValue();
 echo PHP_EOL;
 echo PHP_EOL;
 
-echo "4) Вывод длинны строки value c помощью функции getSize(): ";
+echo "5) Вывод длинны строки value c помощью функции getSize(): ";
 echo $obj->getSize();
 echo PHP_EOL;
 echo PHP_EOL;
 
-echo "5) Работа функции getSave(): " . $obj->getSave();
+echo "6) Работа функции getSave(): " . $obj->getSave();
 echo PHP_EOL;
 echo PHP_EOL;
 
-echo "6) Создаем массив.";
+echo "7) Создаем массив.";
 echo PHP_EOL;
 echo PHP_EOL;
 
-echo "7) Добавляем в массив значение value и выводим массив с помощью load(): ";
+echo "8) Добавляем в массив значение value и выводим массив с помощью load(): ";
 echo PHP_EOL;
 echo "   ";
 $arValue = [];
@@ -152,7 +156,7 @@ print_r($arValue);
 echo PHP_EOL;
 echo PHP_EOL;
 
-echo "Устанавливаем новое значение.";
+echo "Устанавливаем новое значение 'Seraphima'.";
 $obj->setValue('Seraphima');
 echo PHP_EOL;
 
@@ -163,3 +167,5 @@ print_r($arValue);
 echo PHP_EOL;
 
 echo "Работа функции getSave(): " . $obj->getSave();
+echo PHP_EOL;
+echo PHP_EOL;
