@@ -53,18 +53,18 @@ class newBase
      */
     public function getSave(): string
     {
-        $value = serialize($value);
-        return $this->name . ':' . sizeof($value) . ':' . $value;
+        $value = serialize($this->value);
+        return $this->name . ':' . strlen($value) . ':' . $value;
     }
     /**
      * @return newBase
      */
-    static public function load(string $value): newBase
+    public static function load(string $value)
     {
         $arValue = explode(':', $value);
         return (new newBase($arValue[0]))
             ->setValue(unserialize(substr($value, strlen($arValue[0]) + 1
-                + strlen($arValue[1]) + 1), $arValue[1]));
+                + strlen($arValue[1]) + 1), $arValue));
     }
 }
 class newView extends newBase
@@ -97,7 +97,7 @@ class newView extends newBase
         } elseif ($this->type == 'test') {
             $this->size = parent::getSize();
         } else {
-            $this->size = strlen($this->value);
+            $this->size = 1;
         }
     }
     /**
@@ -112,10 +112,14 @@ class newView extends newBase
      */
     public function getName(): string
     {
-        if (empty($this->name)) {
-            throw new Exception('The object doesn\'t have name');
+        try {
+            if (empty($this->name)) {
+                throw new \Exception('The object doesn\'t have name');
+            }
+        } catch (\Exception $e) {
+            return '"' . "no-object-name"  . '": ';
         }
-        return '"' . $this->name  . '": ';
+
     }
     /**
      * @return string
@@ -152,29 +156,25 @@ class newView extends newBase
         }
         return parent::getSave() . serialize($this->property);
     }
+
     /**
      * @return newView
      */
-    static public function load(string $value): newBase
+    public static function load(string $value)
     {
         $arValue = explode(':', $value);
         return (new newBase($arValue[0]))
             ->setValue(unserialize(substr($value, strlen($arValue[0]) + 1
-                + strlen($arValue[1]) + 1), $arValue[1]))
+                + strlen($arValue[1]) + 1), $arValue))
             ->setProperty(unserialize(substr($value, strlen($arValue[0]) + 1
-                + strlen($arValue[1]) + 1 + $arValue[1])))
-            ;
+                + strlen($arValue[1]) + 1 + $arValue[1])));
     }
 }
+
 function gettype($value): string
 {
     if (is_object($value)) {
-        $type = get_class($value);
-        do {
-            if (strpos($type, "Test3\newBase") !== false) {
-                return 'test';
-            }
-        } while ($type = get_parent_class($type));
+        return get_class($value);
     }
     return gettype($value);
 }
@@ -183,7 +183,7 @@ function gettype($value): string
 $obj = new newBase('12345');
 $obj->setValue('text');
 
-$obj2 = new \Test3\newView('O9876');
+$obj2 = new newView('9876');
 $obj2->setValue($obj);
 $obj2->setProperty('field');
 $obj2->getInfo();
